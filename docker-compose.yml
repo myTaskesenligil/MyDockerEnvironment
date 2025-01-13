@@ -2,6 +2,7 @@ services:
   php8.2:
     #image içerisinden kurulum yapılmasını istersek bunu açıyoruz, yoksa yorum satırı yapıyoruz
     #image: php:8.2-fpm
+    container_name: php-container
     build:
       context: ./docker/php8.2
     hostname: php8.2
@@ -12,12 +13,13 @@ services:
       - ./docker/php8.2/www.conf:/usr/local/etc/php-fpm.d/www.conf
       - ./docker/php8.2/php.ini:/usr/local/etc/php/php.ini
     environment:
-       MYSQL_USER: ${MYSQL_USER}
-       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+       MYSQL_USER: db_admin
+       MYSQL_PASSWORD: 12345
 
   nginx:
     platform: linux/x86_64
     image: nginx:latest
+    container_name: nginx-container
     ports:
       - "80:80"
     volumes:
@@ -28,22 +30,24 @@ services:
 
   mysql:
     platform: linux/x86_64
-    image: mysql:8.4.2
+    container_name: mysql-container
+    image: mysql:latest
     ports:
       - "3306:3306"
     volumes:
       - ./docker/mysql:/var/lib/mysql
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: "12345678"
+      MYSQL_USER: "db_admin"
+      MYSQL_PASSWORD: "12345678"
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest
+    container_name: phpmyadmin-container
     environment:
       PMA_HOST: mysql
-      PMA_USER: ${PMA_USER}
-      PMA_PASSWORD: ${PMA_PASSWORD}
+      PMA_USER: root
+      PMA_PASSWORD: "12345678"
     depends_on:
       - mysql
     ports:
@@ -51,6 +55,7 @@ services:
 
   postgres:
     image: postgres:latest
+    container_name: postgre-container
     environment:
       POSTGRES_DB: LocalPGSQL
       POSTGRES_USER: root
